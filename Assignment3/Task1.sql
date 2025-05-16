@@ -12,5 +12,4 @@ GROUP BY
 ORDER BY 
 	Total DESC
 
-
 -- total sales amount for each sales territory, sorted by the highest total
