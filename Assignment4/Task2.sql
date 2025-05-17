@@ -1,14 +1,16 @@
 USE AdventureWorks2022;
 
-SELECT 
-	sc.CustomerID,
-	AVG(ssoh.SubTotal),
-	COUNT(ssoh.SalesOrderID)
-FROM
-	Sales.Customer AS sc
-JOIN 
-	Sales.SalesOrderHeader AS ssoh ON sc.CustomerID = ssoh.CustomerID
-GROUP BY
-	sc.CustomerID
+SELECT c.CustomerID, COUNT(soh.SalesOrderID) AS OrderCount
+FROM Sales.SalesOrderHeader soh
+JOIN Sales.Customer c ON soh.CustomerID = c.CustomerID
+GROUP BY c.CustomerID
+HAVING COUNT(soh.SalesOrderID) > (
+    SELECT AVG(OrderCount) 
+    FROM (
+        SELECT COUNT(*) AS OrderCount
+        FROM Sales.SalesOrderHeader
+        GROUP BY CustomerID
+    ) AS CustomerOrders
+);
 
--- for each customer, find the average SubTotal of their orders and how many orders they’ve made
+-- customers who placed more orders than the average number of orders per customer
