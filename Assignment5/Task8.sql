@@ -1,14 +1,22 @@
 USE AdventureWorks2022;
 
-SELECT TOP 10
-    soh.CustomerID,
-    COUNT(soh.SalesOrderID) AS OrderCount,
-    SUM(soh.SubTotal) AS TotalSpent
-FROM 
-    Sales.SalesOrderHeader AS soh
-GROUP BY 
-    soh.CustomerID
-ORDER BY 
-    TotalSpent DESC
+BEGIN TRY
+    BEGIN TRANSACTION;
 
--- list the top 10 customers by total order subtotal, along with the number of orders
+    UPDATE Person.PersonPhone
+    SET PhoneNumber = '555-123-4567'
+    WHERE BusinessEntityID = 301 AND PhoneNumberTypeID = 3;
+
+    UPDATE HumanResources.Employee
+    SET JobTitle = 'Senior Sales Representative'
+    WHERE BusinessEntityID = 290;
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    ROLLBACK;
+    PRINT 'Error updating employee info: ' + ERROR_MESSAGE();
+END CATCH;
+
+
+-- update employee phone number and job title

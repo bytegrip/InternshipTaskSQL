@@ -1,16 +1,21 @@
 USE AdventureWorks2022;
 
-SELECT 
-    FORMAT(OrderDate, 'yyyy-MM') AS OrderMonth,
-    COUNT(SalesOrderID) AS OrderCount,
-    SUM(SubTotal) AS TotalSales
-FROM 
-    Sales.SalesOrderHeader
-WHERE 
-    YEAR(OrderDate) = 2013
-GROUP BY 
-    FORMAT(OrderDate, 'yyyy-MM')
-ORDER BY 
-    OrderMonth;
+BEGIN TRY
+    BEGIN TRANSACTION;
 
--- show total sales and number of orders per month in 2013
+    UPDATE Production.Product
+    SET SellEndDate = GETDATE(), DiscontinuedDate = GETDATE()
+    WHERE ProductID = 707;
+
+    DELETE FROM Production.ProductProductPhoto
+    WHERE ProductID = 707;
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    ROLLBACK;
+    PRINT 'Error deactivating product: ' + ERROR_MESSAGE();
+END CATCH;
+
+
+-- deactivate product

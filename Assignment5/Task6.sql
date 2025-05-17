@@ -1,20 +1,21 @@
 USE AdventureWorks2022;
 
-SELECT 
-    p.FirstName + ' ' + p.LastName AS EmployeeName,
-    e.BusinessEntityID,
-    SUM(soh.TotalDue) AS TotalSales
-FROM 
-    Sales.SalesPerson AS sp
-JOIN 
-    HumanResources.Employee AS e ON sp.BusinessEntityID = e.BusinessEntityID
-JOIN 
-    Person.Person AS p ON e.BusinessEntityID = p.BusinessEntityID
-JOIN 
-    Sales.SalesOrderHeader AS soh ON sp.BusinessEntityID = soh.SalesPersonID
-GROUP BY 
-    e.BusinessEntityID, p.FirstName, p.LastName
-ORDER BY 
-    TotalSales DESC;
+BEGIN TRY
+    BEGIN TRANSACTION;
 
--- show each sales employee’s name and the total sales they handled
+    UPDATE Person.Person
+    SET LastName = 'Smith'
+    WHERE BusinessEntityID = 1;
+
+    UPDATE Person.EmailAddress
+    SET EmailAddress = 'john.smith@adventure-works.com'
+    WHERE BusinessEntityID = 1;
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    ROLLBACK;
+    PRINT 'Error updating person info: ' + ERROR_MESSAGE();
+END CATCH;
+
+-- change person's last name and email
