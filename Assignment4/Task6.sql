@@ -1,20 +1,12 @@
 USE AdventureWorks2022;
 
-SELECT 
-    p.FirstName + ' ' + p.LastName AS EmployeeName,
-    e.BusinessEntityID,
-    SUM(soh.TotalDue) AS TotalSales
-FROM 
-    Sales.SalesPerson AS sp
-JOIN 
-    HumanResources.Employee AS e ON sp.BusinessEntityID = e.BusinessEntityID
-JOIN 
-    Person.Person AS p ON e.BusinessEntityID = p.BusinessEntityID
-JOIN 
-    Sales.SalesOrderHeader AS soh ON sp.BusinessEntityID = soh.SalesPersonID
-GROUP BY 
-    e.BusinessEntityID, p.FirstName, p.LastName
-ORDER BY 
-    TotalSales DESC;
+SELECT DISTINCT soh.CustomerID
+FROM Sales.SalesOrderHeader soh
+JOIN Sales.SalesOrderDetail sod ON soh.SalesOrderID = sod.SalesOrderID
+WHERE sod.ProductID IN (
+    SELECT ProductID
+    FROM Production.Product
+    WHERE ListPrice > 1000
+);
 
--- show each sales employee’s name and the total sales they handled
+-- customers who purchased products costing more than $1000
