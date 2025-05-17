@@ -1,14 +1,11 @@
 USE AdventureWorks2022;
 
-SELECT TOP 10
-    soh.CustomerID,
-    COUNT(soh.SalesOrderID) AS OrderCount,
-    SUM(soh.SubTotal) AS TotalSpent
-FROM 
-    Sales.SalesOrderHeader AS soh
-GROUP BY 
-    soh.CustomerID
-ORDER BY 
-    TotalSpent DESC
+SELECT e.BusinessEntityID, p.FirstName, p.LastName, e.HireDate
+FROM HumanResources.Employee e
+JOIN Person.Person p ON e.BusinessEntityID = p.BusinessEntityID
+WHERE e.HireDate < (
+    SELECT MAX(HireDate)
+    FROM HumanResources.Employee
+);
 
--- list the top 10 customers by total order subtotal, along with the number of orders
+-- employees hired before the latest hire date
