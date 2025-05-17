@@ -1,16 +1,25 @@
 USE AdventureWorks2022;
 
-SELECT TOP 5
-    pp.ProductID,
-    pp.Name AS ProductName,
-    SUM(ssod.OrderQty) AS TotalQuantitySold
-FROM
-    Production.Product AS pp
-JOIN 
-    Sales.SalesOrderDetail AS ssod ON pp.ProductID = ssod.ProductID
-GROUP BY
-    pp.ProductID, pp.Name
-ORDER BY 
-    TotalQuantitySold DESC;
+BEGIN TRY
+    BEGIN TRANSACTION;
 
--- list the top 5 most sold products by total quantity
+    DELETE FROM Sales.SalesOrderDetail
+    WHERE SalesOrderID IN (
+        SELECT SalesOrderID FROM Sales.SalesOrderHeader WHERE CustomerID = 180
+    );
+
+    DELETE FROM Sales.SalesOrderHeader
+    WHERE CustomerID = 180;
+
+    DELETE FROM Sales.Customer
+    WHERE CustomerID = 180;
+
+    COMMIT;
+END TRY
+BEGIN CATCH
+    ROLLBACK;
+    PRINT 'Error deleting customer: ' + ERROR_MESSAGE();
+END CATCH;
+
+
+-- delete a customer and their orders
