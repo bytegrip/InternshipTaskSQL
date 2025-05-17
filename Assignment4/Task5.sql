@@ -1,16 +1,16 @@
 USE AdventureWorks2022;
 
-SELECT 
-    FORMAT(OrderDate, 'yyyy-MM') AS OrderMonth,
-    COUNT(SalesOrderID) AS OrderCount,
-    SUM(SubTotal) AS TotalSales
-FROM 
-    Sales.SalesOrderHeader
-WHERE 
-    YEAR(OrderDate) = 2013
-GROUP BY 
-    FORMAT(OrderDate, 'yyyy-MM')
-ORDER BY 
-    OrderMonth;
+SELECT DISTINCT e.BusinessEntityID, p.FirstName, p.LastName
+FROM HumanResources.EmployeeDepartmentHistory edh
+JOIN HumanResources.Employee e ON edh.BusinessEntityID = e.BusinessEntityID
+JOIN Person.Person p ON e.BusinessEntityID = p.BusinessEntityID
+WHERE edh.DepartmentID = (
+    SELECT TOP 1 edh2.DepartmentID
+    FROM Person.Person p2
+    JOIN HumanResources.Employee e2 ON p2.BusinessEntityID = e2.BusinessEntityID
+    JOIN HumanResources.EmployeeDepartmentHistory edh2 ON e2.BusinessEntityID = edh2.BusinessEntityID
+    WHERE p2.FirstName = 'David' AND p2.LastName = 'Bradley'
+    ORDER BY edh2.StartDate DESC
+);
 
--- show total sales and number of orders per month in 2013
+-- employees in the same department as 'David Bradley'
