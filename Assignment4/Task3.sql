@@ -1,14 +1,13 @@
 USE AdventureWorks2022;
 
-SELECT 
-	pp.ProductID,
-	pp.Name
-FROM
-	Production.Product AS pp
-LEFT JOIN 
-	Sales.SalesOrderDetail AS ssod ON pp.ProductID = ssod.ProductID
-WHERE 
-	ssod.ProductID IS NULL
+SELECT Name, ListPrice
+FROM Production.Product
+WHERE ListPrice > ALL (
+    SELECT ListPrice
+    FROM Production.Product p
+    JOIN Production.ProductSubcategory sc ON p.ProductSubcategoryID = sc.ProductSubcategoryID
+    JOIN Production.ProductCategory c ON sc.ProductCategoryID = c.ProductCategoryID
+    WHERE c.Name = 'Components'
+);
 
--- list all products that have never been sold
-
+-- products more expensive than all components
